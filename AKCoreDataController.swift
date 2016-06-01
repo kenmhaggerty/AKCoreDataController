@@ -3,7 +3,7 @@
 //  AKCoreDataController
 //
 //  Created by Ken M. Haggerty on 5/30/16.
-//  Copyright © 2016 Peter Cicchino Youth Project. All rights reserved.
+//  Copyright © 2016 Ken M. Haggerty. All rights reserved.
 //
 
 import Foundation
