@@ -1,6 +1,6 @@
 //
-//  AKManagedObject+CoreDataProperties.m
-//  AKCoreDataController
+//  KMHManagedObject+CoreDataProperties.m
+//  KMHCoreDataController
 //
 //  Created by Ken M. Haggerty on 4/13/16.
 //  Copyright © 2016 Flatiron School. All rights reserved.
@@ -13,13 +13,11 @@
 
 #pragma mark - // IMPORTS (Private) //
 
-#import "AKManagedObject+CoreDataProperties.h"
-//#import "AKDebugger.h"
-//#import "AKGenerics.h"
+#import "KMHManagedObject+CoreDataProperties.h"
 
 #pragma mark - // DEFINITIONS (Private) //
 
-@implementation AKManagedObject (CoreDataProperties)
+@implementation KMHManagedObject (CoreDataProperties)
 
 #pragma mark - // SETTERS AND GETTERS //
 

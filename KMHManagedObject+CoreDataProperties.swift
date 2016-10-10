@@ -1,6 +1,6 @@
 //
-//  AKManagedObject+CoreDataProperties.swift
-//  pcyp-ios
+//  KMHManagedObject+CoreDataProperties.swift
+//  KMHCoreDataController
 //
 //  Created by Ken M. Haggerty on 6/14/16.
 //  Copyright © 2016 Peter Cicchino Youth Project. All rights reserved.
@@ -12,7 +12,7 @@
 import Foundation
 import CoreData
 
-extension AKManagedObject {
+extension KMHManagedObject {
 
 
 }
