@@ -34,6 +34,7 @@ NSString * const KMHManagedObjectWillBeDeletedNotification = @"kNotificationKMHM
 
 #pragma mark - // SETTERS AND GETTERS //
 
+@synthesize instantiatedAt = _instantiatedAt;
 @synthesize changedKeys = _changedKeys;
 @synthesize isSaving = _isSaving;
 @synthesize willBeDeleted = _willBeDeleted;
@@ -49,11 +50,15 @@ NSString * const KMHManagedObjectWillBeDeletedNotification = @"kNotificationKMHM
 - (void)awakeFromInsert {
     [super awakeFromInsert];
     
+    [self setup];
+    
     [[NSNotificationCenter defaultCenter] postNotificationName:KMHManagedObjectWasCreatedNotification object:self userInfo:nil];
 }
 
 - (void)awakeFromFetch {
     [super awakeFromFetch];
+    
+    [self setup];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:KMHManagedObjectWasFetchedNotification object:self userInfo:nil];
 }
@@ -99,9 +104,10 @@ NSString * const KMHManagedObjectWillBeDeletedNotification = @"kNotificationKMHM
 #pragma mark - // PUBLIC METHODS //
 
 - (void)setup {
-    self.isSaving = NO;
-    self.wasDeleted = NO;
-    self.parentIsDeleted = NO;
+    _instantiatedAt = [NSDate date];
+    _isSaving = NO;
+    _wasDeleted = NO;
+    _parentIsDeleted = NO;
 }
 
 #pragma mark - // CATEGORY METHODS //

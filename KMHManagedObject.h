@@ -29,6 +29,7 @@ extern NSString * const KMHManagedObjectWillBeDeletedNotification;
 NS_ASSUME_NONNULL_BEGIN
 
 @interface KMHManagedObject : NSManagedObject
+@property (nonatomic, strong, readonly) NSDate *instantiatedAt;
 @property (nonatomic, strong, readonly) NSSet *changedKeys;
 @property (nonatomic, readonly) BOOL isSaving;
 @property (nonatomic, readonly) BOOL willBeDeleted;
