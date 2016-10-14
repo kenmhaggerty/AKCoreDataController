@@ -170,7 +170,7 @@ NSString * const KMHCoreDataWillSaveNotification = @"kKMHCoreDataWillSaveNotific
     return objects;
 }
 
-+ (void)deleteObject:(id)object error:(NSError **)error {
++ (void)deleteObject:(NSManagedObject *)object error:(NSError **)error {
     if (!object) {
         NSDictionary *userInfo = @{NSLocalizedDescriptionKey : @"Can't delete object.",
                                    NSLocalizedFailureReasonErrorKey : @"object is nil"};

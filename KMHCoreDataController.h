@@ -12,6 +12,8 @@
 
 #import <Foundation/Foundation.h>
 
+@class NSManagedObject;
+
 #pragma mark - // PROTOCOLS //
 
 #pragma mark - // DEFINITIONS (Public) //
@@ -32,9 +34,9 @@ extern NSString * const KMHCoreDataWillSaveNotification;
 // OBJECTS //
 
 + (id)createObjectWithClass:(NSString *)className block:(void (^)(id))block;
-+ (void)deleteObject:(id)object error:(NSError **)error;
 + (NSUInteger)countObjectsWithClass:(NSString *)className predicate:(NSPredicate *)predicate error:(NSError *)error;
 + (NSArray *)fetchObjectsWithClass:(NSString *)className predicate:(NSPredicate *)predicate sortDescriptors:(NSArray <NSSortDescriptor *> *)sortDescriptors error:(NSError *)error;
++ (void)deleteObject:(NSManagedObject *)object error:(NSError **)error;
 
 // MIGRATION //
 
