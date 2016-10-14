@@ -46,16 +46,16 @@ NSString * const KMHCoreDataWillSaveNotification = @"kKMHCoreDataWillSaveNotific
 // MIGRATION //
 
 + (void)setMigrationManager:(NSMigrationManager *)migrationManager;
-+ (BOOL)progressivelyMigrateURL:(NSURL *)sourceStoreURL ofType:(NSString *)type toModel:(NSManagedObjectModel *)finalModel error:(NSError **)error;
++ (BOOL)progressivelyMigrateURL:(NSURL *)sourceStoreURL ofType:(NSString *)type toModel:(NSManagedObjectModel *)finalModel error:(NSError *)error;
 + (NSManagedObjectModel *)sourceModelForSourceMetadata:(NSDictionary *)sourceMetadata;
 + (NSArray *)modelPaths;
 + (NSURL *)destinationStoreURLWithSourceStoreURL:(NSURL *)sourceStoreURL modelName:(NSString *)modelName;
-+ (BOOL)backupSourceStoreAtURL:(NSURL *)sourceStoreURL movingDestinationStoreAtURL:(NSURL *)destinationStoreURL error:(NSError **)error;
++ (BOOL)backupSourceStoreAtURL:(NSURL *)sourceStoreURL movingDestinationStoreAtURL:(NSURL *)destinationStoreURL error:(NSError *)error;
 
 // OTHER //
 
 + (NSManagedObjectModel *)managedObjectModelWithURL:(NSURL *)modelURL;
-+ (NSPersistentStoreCoordinator *)persistentStoreCoordinatorWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel sourceStoreURL:(NSURL *)sourceStoreURL error:(NSError **)error;
++ (NSPersistentStoreCoordinator *)persistentStoreCoordinatorWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel sourceStoreURL:(NSURL *)sourceStoreURL error:(NSError *)error;
 + (NSManagedObjectContext *)managedObjectContextWithConcurrencyType:(NSManagedObjectContextConcurrencyType)type persistentStoreCoordinator:(NSPersistentStoreCoordinator *)persistentStoreCoordinator;
 
 @end
@@ -96,7 +96,7 @@ NSString * const KMHCoreDataWillSaveNotification = @"kKMHCoreDataWillSaveNotific
 
 #pragma mark - // PUBLIC METHODS (General) //
 
-+ (void)setupWithName:(NSString *)name type:(NSString *)sourceStoreType resourceName:(NSString *)resourceName error:(NSError **)error {
++ (void)setupWithName:(NSString *)name type:(NSString *)sourceStoreType resourceName:(NSString *)resourceName error:(NSError *)error {
     NSURL *applicationDocumentsDirectory = [[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask].lastObject;
     NSString *sourceStoreFilename = [name stringByAppendingString:[KMHCoreDataController extensionForType:sourceStoreType]];
     NSURL *sourceStoreURL = [applicationDocumentsDirectory URLByAppendingPathComponent:sourceStoreFilename];
@@ -111,7 +111,7 @@ NSString * const KMHCoreDataWillSaveNotification = @"kKMHCoreDataWillSaveNotific
     [KMHCoreDataController initWithSourceStoreType:sourceStoreType url:sourceStoreURL managedObjectModel:managedObjectModel persistentStoreCoordinator:persistentStoreCoordinator managedObjectContext:managedObjectContext];
 }
 
-+ (void)save:(void (^)(NSError **))errorBlock {
++ (void)save:(void (^)(NSError *))errorBlock {
     NSManagedObjectContext *managedObjectContext = [KMHCoreDataController managedObjectContext];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:KMHCoreDataWillSaveNotification object:nil userInfo:nil];
@@ -121,7 +121,7 @@ NSString * const KMHCoreDataWillSaveNotification = @"kKMHCoreDataWillSaveNotific
         // Replace this implementation with code to handle the error appropriately.
         // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
         if (errorBlock) {
-            errorBlock(&error);
+            errorBlock(error);
         }
         abort();
     }
@@ -141,28 +141,32 @@ NSString * const KMHCoreDataWillSaveNotification = @"kKMHCoreDataWillSaveNotific
     return object;
 }
 
-+ (NSUInteger)countObjectsWithClass:(NSString *)className predicate:(NSPredicate *)predicate error:(NSError **)error {
++ (NSUInteger)countObjectsWithClass:(NSString *)className predicate:(NSPredicate *)predicate error:(NSError *)error {
     NSManagedObjectContext *managedObjectContext = [KMHCoreDataController managedObjectContext];
     __block NSUInteger count;
+    __block NSError *requestError;
     [managedObjectContext performBlockAndWait:^{
         NSFetchRequest *request = [[NSFetchRequest alloc] init];
         request.entity = [NSEntityDescription entityForName:className inManagedObjectContext:managedObjectContext];
         request.predicate = predicate;
-        count = [managedObjectContext countForFetchRequest:request error:error];
+        count = [managedObjectContext countForFetchRequest:request error:&requestError];
     }];
+    error = requestError;
     return count;
 }
 
-+ (NSArray *)fetchObjectsWithClass:(NSString *)className predicate:(NSPredicate *)predicate sortDescriptors:(NSArray <NSSortDescriptor *> *)sortDescriptors error:(NSError **)error {
++ (NSArray *)fetchObjectsWithClass:(NSString *)className predicate:(NSPredicate *)predicate sortDescriptors:(NSArray <NSSortDescriptor *> *)sortDescriptors error:(NSError *)error {
     NSManagedObjectContext *managedObjectContext = [KMHCoreDataController managedObjectContext];
     __block NSArray *objects;
+    __block NSError *requestError;
     [managedObjectContext performBlockAndWait:^{
         NSFetchRequest *request = [[NSFetchRequest alloc] init];
         request.entity = [NSEntityDescription entityForName:className inManagedObjectContext:managedObjectContext];
         request.predicate = predicate;
         request.sortDescriptors = sortDescriptors;
-        objects = [managedObjectContext executeFetchRequest:request error:error];
+        objects = [managedObjectContext executeFetchRequest:request error:&requestError];
     }];
+    error = requestError;
     return objects;
 }
 
@@ -189,13 +193,13 @@ NSString * const KMHCoreDataWillSaveNotification = @"kKMHCoreDataWillSaveNotific
 
 #pragma mark - // PUBLIC METHODS (Migration) //
 
-+ (BOOL)needsMigration:(NSError **)error {
++ (BOOL)needsMigration:(NSError *)error {
     NSManagedObjectModel *managedObjectModel = [KMHCoreDataController managedObjectModel];
-    NSDictionary *sourceMetadata = [NSPersistentStoreCoordinator metadataForPersistentStoreOfType:[KMHCoreDataController sourceStoreType] URL:[KMHCoreDataController sourceStoreURL] options:nil error:error];
+    NSDictionary *sourceMetadata = [NSPersistentStoreCoordinator metadataForPersistentStoreOfType:[KMHCoreDataController sourceStoreType] URL:[KMHCoreDataController sourceStoreURL] options:nil error:&error];
     return ![managedObjectModel isConfiguration:nil compatibleWithStoreMetadata:sourceMetadata];
 }
 
-+ (BOOL)migrate:(NSError **)error {
++ (BOOL)migrate:(NSError *)error {
     // Enable migrations to run even while user exits app
     __block UIBackgroundTaskIdentifier backgroundTask;
     backgroundTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
@@ -289,15 +293,15 @@ NSString * const KMHCoreDataWillSaveNotification = @"kKMHCoreDataWillSaveNotific
     [KMHCoreDataController sharedController].migrationManager = migrationManager;
 }
 
-+ (BOOL)progressivelyMigrateURL:(NSURL *)sourceStoreURL ofType:(NSString *)type toModel:(NSManagedObjectModel *)finalModel error:(NSError **)error {
-    NSDictionary *sourceMetadata = [NSPersistentStoreCoordinator metadataForPersistentStoreOfType:type URL:sourceStoreURL options:nil error:error];
++ (BOOL)progressivelyMigrateURL:(NSURL *)sourceStoreURL ofType:(NSString *)type toModel:(NSManagedObjectModel *)finalModel error:(NSError *)error {
+    NSDictionary *sourceMetadata = [NSPersistentStoreCoordinator metadataForPersistentStoreOfType:type URL:sourceStoreURL options:nil error:&error];
     if (!sourceMetadata) {
         return NO;
     }
     
     if ([finalModel isConfiguration:nil compatibleWithStoreMetadata:sourceMetadata]) {
         if (NULL != error) {
-            *error = nil;
+            error = nil;
         }
         return YES;
     }
@@ -306,7 +310,7 @@ NSString * const KMHCoreDataWillSaveNotification = @"kKMHCoreDataWillSaveNotific
     NSManagedObjectModel *destinationModel;
     NSMappingModel *mappingModel;
     NSString *modelName;
-    if (![KMHCoreDataController getDestinationModel:&destinationModel mappingModel:&mappingModel modelName:&modelName forSourceModel:sourceModel error:error]) {
+    if (![KMHCoreDataController getDestinationModel:&destinationModel mappingModel:&mappingModel modelName:&modelName forSourceModel:sourceModel error:&error]) {
         return NO;
     }
     
@@ -325,7 +329,7 @@ NSString * const KMHCoreDataWillSaveNotification = @"kKMHCoreDataWillSaveNotific
     [KMHCoreDataController setMigrationManager:migrationManager];
     
     // Migrate
-    BOOL success = [migrationManager migrateStoreFromURL:sourceStoreURL type:type options:nil withMappingModel:mappingModel toDestinationURL:destinationStoreURL destinationType:type destinationOptions:nil error:error];
+    BOOL success = [migrationManager migrateStoreFromURL:sourceStoreURL type:type options:nil withMappingModel:mappingModel toDestinationURL:destinationStoreURL destinationType:type destinationOptions:nil error:&error];
     
     [KMHCoreDataController setMigrationManager:nil];
     
@@ -407,18 +411,18 @@ NSString * const KMHCoreDataWillSaveNotification = @"kKMHCoreDataWillSaveNotific
     return [NSURL fileURLWithPath:storePath];
 }
 
-+ (BOOL)backupSourceStoreAtURL:(NSURL *)sourceStoreURL movingDestinationStoreAtURL:(NSURL *)destinationStoreURL error:(NSError **)error {
++ (BOOL)backupSourceStoreAtURL:(NSURL *)sourceStoreURL movingDestinationStoreAtURL:(NSURL *)destinationStoreURL error:(NSError *)error {
     NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
     NSString *backupPath = [NSTemporaryDirectory() stringByAppendingPathComponent:guid];
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    if (![fileManager moveItemAtPath:sourceStoreURL.path toPath:backupPath error:error]) {
+    if (![fileManager moveItemAtPath:sourceStoreURL.path toPath:backupPath error:&error]) {
         //Failed to copy the file
         return NO;
     }
     
     //Move the destination to the source path
-    if (![fileManager moveItemAtPath:destinationStoreURL.path toPath:sourceStoreURL.path error:error]) {
+    if (![fileManager moveItemAtPath:destinationStoreURL.path toPath:sourceStoreURL.path error:&error]) {
         //Try to back out the source move first, no point in checking it for errors
         [fileManager moveItemAtPath:backupPath toPath:sourceStoreURL.path error:nil];
         return NO;
@@ -433,9 +437,9 @@ NSString * const KMHCoreDataWillSaveNotification = @"kKMHCoreDataWillSaveNotific
     return [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
 }
 
-+ (NSPersistentStoreCoordinator *)persistentStoreCoordinatorWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel sourceStoreURL:(NSURL *)sourceStoreURL error:(NSError **)error {
++ (NSPersistentStoreCoordinator *)persistentStoreCoordinatorWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel sourceStoreURL:(NSURL *)sourceStoreURL error:(NSError *)error {
     NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
-    if (![persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:sourceStoreURL options:nil error:error]) {
+    if (![persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:sourceStoreURL options:nil error:&error]) {
         // Replace this with code to handle the error appropriately.
         // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
         

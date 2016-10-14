@@ -26,19 +26,19 @@ extern NSString * const KMHCoreDataWillSaveNotification;
 
 // GENERAL //
 
-+ (void)setupWithName:(NSString *)name type:(NSString *)sourceStoreType resourceName:(NSString *)resourceName error:(NSError **)error;
-+ (void)save:(void (^)(NSError **))errorBlock;
++ (void)setupWithName:(NSString *)name type:(NSString *)sourceStoreType resourceName:(NSString *)resourceName error:(NSError *)error;
++ (void)save:(void (^)(NSError *))errorBlock;
 
 // OBJECTS //
 
 + (id)createObjectWithClass:(NSString *)className block:(void (^)(id))block;
-+ (NSUInteger)countObjectsWithClass:(NSString *)className predicate:(NSPredicate *)predicate error:(NSError **)error;
-+ (NSArray *)fetchObjectsWithClass:(NSString *)className predicate:(NSPredicate *)predicate sortDescriptors:(NSArray <NSSortDescriptor *> *)sortDescriptors error:(NSError **)error;
 + (void)deleteObject:(id)object error:(NSError **)error;
++ (NSUInteger)countObjectsWithClass:(NSString *)className predicate:(NSPredicate *)predicate error:(NSError *)error;
++ (NSArray *)fetchObjectsWithClass:(NSString *)className predicate:(NSPredicate *)predicate sortDescriptors:(NSArray <NSSortDescriptor *> *)sortDescriptors error:(NSError *)error;
 
 // MIGRATION //
 
-+ (BOOL)needsMigration:(NSError **)error;
-+ (BOOL)migrate:(NSError **)error;
++ (BOOL)needsMigration:(NSError *)error;
++ (BOOL)migrate:(NSError *)error;
 
 @end
