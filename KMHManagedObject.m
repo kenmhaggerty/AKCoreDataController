@@ -12,7 +12,9 @@
 
 #import "KMHManagedObject.h"
 
-#pragma mark - // DEFINITIONS (Private) //
+#pragma mark - // KMHManagedObject //
+
+#pragma mark Notifications
 
 NSString * _Nonnull const KMHManagedObjectNotificationObjectKey = @"object";
 
@@ -23,6 +25,8 @@ NSString * _Nonnull const KMHManagedObjectWillSaveNotification = @"kNotification
 NSString * _Nonnull const KMHManagedObjectDidSaveNotification = @"kNotificationKMHManagedObject_DidSave";
 NSString * _Nonnull const KMHManagedObjectWillBeDeletedNotification = @"kNotificationKMHManagedObject_WillBeDeleted";
 
+#pragma mark Methods
+
 @interface KMHManagedObject ()
 @property (nonatomic, strong, readwrite) NSSet *changedKeys;
 @property (nonatomic, readwrite) BOOL isSaving;
@@ -32,7 +36,7 @@ NSString * _Nonnull const KMHManagedObjectWillBeDeletedNotification = @"kNotific
 
 @implementation KMHManagedObject
 
-#pragma mark - // SETTERS AND GETTERS //
+#pragma mark Setters
 
 @synthesize instantiatedAt = _instantiatedAt;
 @synthesize changedKeys = _changedKeys;
@@ -41,7 +45,7 @@ NSString * _Nonnull const KMHManagedObjectWillBeDeletedNotification = @"kNotific
 @synthesize wasDeleted = _wasDeleted;
 @synthesize parentIsDeleted = _parentIsDeleted;
 
-#pragma mark - // INITS AND LOADS //
+#pragma mark Inits and Loads
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] postNotificationName:KMHManagedObjectWillBeDeallocatedNotification object:self userInfo:nil];
@@ -101,7 +105,7 @@ NSString * _Nonnull const KMHManagedObjectWillBeDeletedNotification = @"kNotific
     [super prepareForDeletion];
 }
 
-#pragma mark - // PUBLIC METHODS //
+#pragma mark - Public Methods
 
 - (void)setup {
     _instantiatedAt = [NSDate date];
@@ -109,13 +113,5 @@ NSString * _Nonnull const KMHManagedObjectWillBeDeletedNotification = @"kNotific
     _wasDeleted = NO;
     _parentIsDeleted = NO;
 }
-
-#pragma mark - // CATEGORY METHODS //
-
-#pragma mark - // DELEGATED METHODS //
-
-#pragma mark - // OVERWRITTEN METHODS //
-
-#pragma mark - // PRIVATE METHODS //
 
 @end

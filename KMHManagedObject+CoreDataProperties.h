@@ -15,9 +15,9 @@
 
 #import "KMHManagedObject.h"
 
-#pragma mark - // PROTOCOLS //
+#pragma mark - // KMHManagedObject //
 
-#pragma mark - // DEFINITIONS (Public) //
+#pragma mark Methods
 
 NS_ASSUME_NONNULL_BEGIN
 
