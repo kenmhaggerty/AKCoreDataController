@@ -14,14 +14,14 @@
 
 #pragma mark - // DEFINITIONS (Private) //
 
-NSString * const KMHManagedObjectNotificationObjectKey = @"object";
+NSString * _Nonnull const KMHManagedObjectNotificationObjectKey = @"object";
 
-NSString * const KMHManagedObjectWillBeDeallocatedNotification = @"kNotificationKMHManagedObject_WillBeDeallocated";
-NSString * const KMHManagedObjectWasCreatedNotification = @"kNotificationKMHManagedObject_WasCreated";
-NSString * const KMHManagedObjectWasFetchedNotification = @"kNotificationKMHManagedObject_WasFetched";
-NSString * const KMHManagedObjectWillSaveNotification = @"kNotificationKMHManagedObject_WillSave";
-NSString * const KMHManagedObjectDidSaveNotification = @"kNotificationKMHManagedObject_DidSave";
-NSString * const KMHManagedObjectWillBeDeletedNotification = @"kNotificationKMHManagedObject_WillBeDeleted";
+NSString * _Nonnull const KMHManagedObjectWillBeDeallocatedNotification = @"kNotificationKMHManagedObject_WillBeDeallocated";
+NSString * _Nonnull const KMHManagedObjectWasCreatedNotification = @"kNotificationKMHManagedObject_WasCreated";
+NSString * _Nonnull const KMHManagedObjectWasFetchedNotification = @"kNotificationKMHManagedObject_WasFetched";
+NSString * _Nonnull const KMHManagedObjectWillSaveNotification = @"kNotificationKMHManagedObject_WillSave";
+NSString * _Nonnull const KMHManagedObjectDidSaveNotification = @"kNotificationKMHManagedObject_DidSave";
+NSString * _Nonnull const KMHManagedObjectWillBeDeletedNotification = @"kNotificationKMHManagedObject_WillBeDeleted";
 
 @interface KMHManagedObject ()
 @property (nonatomic, strong, readwrite) NSSet *changedKeys;

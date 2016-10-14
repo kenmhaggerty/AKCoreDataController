@@ -17,14 +17,14 @@
 
 #pragma mark - // DEFINITIONS (Public) //
 
-extern NSString * const KMHManagedObjectNotificationObjectKey;
+extern NSString * _Nonnull const KMHManagedObjectNotificationObjectKey;
 
-extern NSString * const KMHManagedObjectWillBeDeallocatedNotification;
-extern NSString * const KMHManagedObjectWasCreatedNotification;
-extern NSString * const KMHManagedObjectWasFetchedNotification;
-extern NSString * const KMHManagedObjectWillSaveNotification;
-extern NSString * const KMHManagedObjectDidSaveNotification;
-extern NSString * const KMHManagedObjectWillBeDeletedNotification;
+extern NSString * _Nonnull const KMHManagedObjectWillBeDeallocatedNotification;
+extern NSString * _Nonnull const KMHManagedObjectWasCreatedNotification;
+extern NSString * _Nonnull const KMHManagedObjectWasFetchedNotification;
+extern NSString * _Nonnull const KMHManagedObjectWillSaveNotification;
+extern NSString * _Nonnull const KMHManagedObjectDidSaveNotification;
+extern NSString * _Nonnull const KMHManagedObjectWillBeDeletedNotification;
 
 NS_ASSUME_NONNULL_BEGIN
 
