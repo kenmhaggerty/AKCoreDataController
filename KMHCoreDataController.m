@@ -133,7 +133,7 @@ NSString * const KMHCoreDataWillSaveNotification = @"kKMHCoreDataWillSaveNotific
 
 #pragma mark - // PUBLIC METHODS (Objects) //
 
-+ (id)createObjectWithClass:(NSString *)className block:(void (^)(id))block {
++ (id)createObjectWithClass:(NSString *)className block:(void (^)(id object))block {
     NSManagedObjectContext *managedObjectContext = [KMHCoreDataController managedObjectContext];
     __block NSManagedObject *object;
     [managedObjectContext performBlockAndWait:^{
