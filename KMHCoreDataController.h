@@ -29,13 +29,13 @@ extern NSString * const KMHCoreDataWillSaveNotification;
 // GENERAL //
 
 + (void)setupWithName:(NSString *)name type:(NSString *)sourceStoreType resourceName:(NSString *)resourceName error:(NSError *)error;
-+ (void)save:(void (^)(NSError *))errorBlock;
++ (void)save:(void (^)(BOOL success, NSError *error))completionBlock;
 
 // OBJECTS //
 
 + (id)createObjectWithClass:(NSString *)className block:(void (^)(id))block;
 + (NSUInteger)countObjectsWithClass:(NSString *)className predicate:(NSPredicate *)predicate error:(NSError *)error;
-+ (NSArray *)fetchObjectsWithClass:(NSString *)className predicate:(NSPredicate *)predicate sortDescriptors:(NSArray <NSSortDescriptor *> *)sortDescriptors error:(NSError *)error;
++ (NSArray *)fetchObjectsWithClass:(NSString *)className predicate:(NSPredicate *)predicate sortDescriptors:(NSArray <NSSortDescriptor *> *)sortDescriptors error:(NSError **)error;
 + (void)deleteObject:(NSManagedObject *)object error:(NSError **)error;
 
 // MIGRATION //

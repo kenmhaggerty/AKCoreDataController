@@ -55,7 +55,7 @@ NSString * const KMHCoreDataWillSaveNotification = @"kKMHCoreDataWillSaveNotific
 // OTHER //
 
 + (NSManagedObjectModel *)managedObjectModelWithURL:(NSURL *)modelURL;
-+ (NSPersistentStoreCoordinator *)persistentStoreCoordinatorWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel sourceStoreURL:(NSURL *)sourceStoreURL error:(NSError *)error;
++ (NSPersistentStoreCoordinator *)persistentStoreCoordinatorWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel sourceStoreURL:(NSURL *)sourceStoreURL type:(NSString *)sourceStoreType error:(NSError **)error;
 + (NSManagedObjectContext *)managedObjectContextWithConcurrencyType:(NSManagedObjectContextConcurrencyType)type persistentStoreCoordinator:(NSPersistentStoreCoordinator *)persistentStoreCoordinator;
 
 @end
@@ -101,7 +101,7 @@ NSString * const KMHCoreDataWillSaveNotification = @"kKMHCoreDataWillSaveNotific
     NSString *sourceStoreFilename = [name stringByAppendingString:[KMHCoreDataController extensionForType:sourceStoreType]];
     NSURL *sourceStoreURL = [applicationDocumentsDirectory URLByAppendingPathComponent:sourceStoreFilename];
     NSManagedObjectModel *managedObjectModel = [KMHCoreDataController managedObjectModelWithURL:[[NSBundle mainBundle] URLForResource:resourceName withExtension:@"momd"]];
-    NSPersistentStoreCoordinator *persistentStoreCoordinator = [KMHCoreDataController persistentStoreCoordinatorWithManagedObjectModel:managedObjectModel sourceStoreURL:sourceStoreURL error:error];
+    NSPersistentStoreCoordinator *persistentStoreCoordinator = [KMHCoreDataController persistentStoreCoordinatorWithManagedObjectModel:managedObjectModel sourceStoreURL:sourceStoreURL type:sourceStoreType error:&error];
     if (error) {
         return;
     }
@@ -111,7 +111,7 @@ NSString * const KMHCoreDataWillSaveNotification = @"kKMHCoreDataWillSaveNotific
     [KMHCoreDataController initWithSourceStoreType:sourceStoreType url:sourceStoreURL managedObjectModel:managedObjectModel persistentStoreCoordinator:persistentStoreCoordinator managedObjectContext:managedObjectContext];
 }
 
-+ (void)save:(void (^)(NSError *))errorBlock {
++ (void)save:(void (^)(BOOL success, NSError *error))completionBlock {
     NSManagedObjectContext *managedObjectContext = [KMHCoreDataController managedObjectContext];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:KMHCoreDataWillSaveNotification object:nil userInfo:nil];
@@ -120,10 +120,14 @@ NSString * const KMHCoreDataWillSaveNotification = @"kKMHCoreDataWillSaveNotific
     if ([managedObjectContext hasChanges] && ![managedObjectContext save:&error]) {
         // Replace this implementation with code to handle the error appropriately.
         // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-        if (errorBlock) {
-            errorBlock(error);
+        
+        if (completionBlock) {
+            completionBlock(NO, error);
         }
-        abort();
+    }
+    
+    if (completionBlock) {
+        completionBlock(YES, nil);
     }
 }
 
@@ -155,7 +159,7 @@ NSString * const KMHCoreDataWillSaveNotification = @"kKMHCoreDataWillSaveNotific
     return count;
 }
 
-+ (NSArray *)fetchObjectsWithClass:(NSString *)className predicate:(NSPredicate *)predicate sortDescriptors:(NSArray <NSSortDescriptor *> *)sortDescriptors error:(NSError *)error {
++ (NSArray *)fetchObjectsWithClass:(NSString *)className predicate:(NSPredicate *)predicate sortDescriptors:(NSArray <NSSortDescriptor *> *)sortDescriptors error:(NSError **)error {
     NSManagedObjectContext *managedObjectContext = [KMHCoreDataController managedObjectContext];
     __block NSArray *objects;
     __block NSError *requestError;
@@ -166,7 +170,7 @@ NSString * const KMHCoreDataWillSaveNotification = @"kKMHCoreDataWillSaveNotific
         request.sortDescriptors = sortDescriptors;
         objects = [managedObjectContext executeFetchRequest:request error:&requestError];
     }];
-    error = requestError;
+    *error = requestError;
     return objects;
 }
 
@@ -437,9 +441,9 @@ NSString * const KMHCoreDataWillSaveNotification = @"kKMHCoreDataWillSaveNotific
     return [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
 }
 
-+ (NSPersistentStoreCoordinator *)persistentStoreCoordinatorWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel sourceStoreURL:(NSURL *)sourceStoreURL error:(NSError *)error {
++ (NSPersistentStoreCoordinator *)persistentStoreCoordinatorWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel sourceStoreURL:(NSURL *)sourceStoreURL type:(NSString *)sourceStoreType error:(NSError **)error {
     NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
-    if (![persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:sourceStoreURL options:nil error:&error]) {
+    if (![persistentStoreCoordinator addPersistentStoreWithType:sourceStoreType configuration:nil URL:sourceStoreURL options:nil error:error]) {
         // Replace this with code to handle the error appropriately.
         // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
         
