@@ -12,7 +12,7 @@
 
 #import "KMHCoreDataController.h"
 #import <UIKit/UIKit.h>
-#import <CoreData/CoreData.h>
+//#import <CoreData/CoreData.h>
 
 #pragma mark - // DEFINITIONS (Private) //
 
