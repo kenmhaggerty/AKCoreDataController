@@ -37,7 +37,7 @@ extern NSString * const KMHCoreDataWillSaveNotification;
 
 + (id)createObjectWithClass:(NSString *)className block:(void (^)(id object))block;
 + (NSUInteger)countObjectsWithClass:(NSString *)className predicate:(NSPredicate *)predicate error:(NSError *)error;
-+ (NSArray *)fetchObjectsWithClass:(NSString *)className predicate:(NSPredicate *)predicate sortDescriptors:(NSArray <NSSortDescriptor *> *)sortDescriptors error:(NSError **)error;
++ (NSArray *)fetchObjectsWithEntityName:(NSString *)entityName predicate:(NSPredicate *)predicate sortDescriptors:(NSArray <NSSortDescriptor *> *)sortDescriptors error:(NSError **)error;
 + (void)deleteObject:(NSManagedObject *)object error:(NSError **)error;
 
 // MIGRATION //

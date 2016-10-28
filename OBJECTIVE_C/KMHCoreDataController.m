@@ -159,13 +159,13 @@ NSString * const KMHCoreDataWillSaveNotification = @"kKMHCoreDataWillSaveNotific
     return count;
 }
 
-+ (NSArray *)fetchObjectsWithClass:(NSString *)className predicate:(NSPredicate *)predicate sortDescriptors:(NSArray <NSSortDescriptor *> *)sortDescriptors error:(NSError **)error {
++ (NSArray *)fetchObjectsWithEntityName:(NSString *)entityName predicate:(NSPredicate *)predicate sortDescriptors:(NSArray <NSSortDescriptor *> *)sortDescriptors error:(NSError **)error {
     NSManagedObjectContext *managedObjectContext = [KMHCoreDataController managedObjectContext];
     __block NSArray *objects;
     __block NSError *requestError;
     [managedObjectContext performBlockAndWait:^{
         NSFetchRequest *request = [[NSFetchRequest alloc] init];
-        request.entity = [NSEntityDescription entityForName:className inManagedObjectContext:managedObjectContext];
+        request.entity = [NSEntityDescription entityForName:entityName inManagedObjectContext:managedObjectContext];
         request.predicate = predicate;
         request.sortDescriptors = sortDescriptors;
         objects = [managedObjectContext executeFetchRequest:request error:&requestError];
